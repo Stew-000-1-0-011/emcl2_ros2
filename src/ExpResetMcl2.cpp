@@ -39,10 +39,11 @@ void ExpResetMcl2::sensorUpdate(double lidar_x, double lidar_y, double lidar_t, 
 	scan.lidar_pose_yaw_ = lidar_t;
 
 	double origin = inv ? scan.angle_max_ : scan.angle_min_;
-	int sgn = inv ? -1 : 1;
+	// a double sign: an int sign times the size_t index would wrap to a huge unsigned value when inverted
+	double sgn = inv ? -1.0 : 1.0;
 	for(size_t i = 0; i < scan.ranges_.size() ; i++) {
 		scan.directions_16bit_.push_back(Pose::get16bitRepresentation(
-			origin + sgn * i * scan.angle_increment_));
+			origin + sgn * static_cast<double>(i) * scan.angle_increment_));
 	}
 
 	double valid_pct = 0.0;
